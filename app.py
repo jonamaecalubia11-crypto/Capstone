@@ -1,10 +1,9 @@
-from flask import Flask, request, jsonify
+import streamlit as st
 from PIL import Image
 import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from torchvision.models import MobileNet_V2_Weights
-import io
 
 # =========================
 # SETTINGS
@@ -56,50 +55,29 @@ model = model.to(DEVICE)
 model.eval()
 
 # =========================
-# FLASK APP
+# STREAMLIT UI
 # =========================
-app = Flask(__name__)
+st.title("Waste Classification AI")
 
-@app.route('/', methods=['GET'])
-def home():
-    return jsonify({
-        'message': 'Waste Classification API',
-        'endpoints': {
-            'POST /predict': 'Upload an image to classify waste. Send image in form field named "image".'
-        }
-    })
+uploaded_file = st.file_uploader(
+    "Upload Waste Image",
+    type=["jpg", "jpeg", "png"]
+)
 
-@app.route('/predict', methods=['POST'])
-def predict():
+if uploaded_file is not None:
 
-    if 'image' not in request.files:
-        return jsonify({
-            'error': 'No image uploaded'
-        })
+    image = Image.open(uploaded_file).convert("RGB")
 
-    file = request.files['image']
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
-    image = Image.open(file.stream).convert("RGB")
-
-    image = transform(image).unsqueeze(0).to(DEVICE)
+    img_tensor = transform(image).unsqueeze(0).to(DEVICE)
 
     with torch.no_grad():
 
-        outputs = model(image)
+        outputs = model(img_tensor)
 
         predicted = torch.argmax(outputs, dim=1).item()
 
     result = class_names[predicted]
 
-    return jsonify({
-        'prediction': result
-    })
-
-# =========================
-# RUN SERVER
-# =========================
-if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=5000
-    )
+    st.success(f"Prediction: {result}")
