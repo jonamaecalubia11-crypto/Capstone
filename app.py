@@ -16,7 +16,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # =========================
 class_names = [
     "biodegradable",
-    "non_biodegradable",
+    "residual",
     "recyclable"
 ]
 
@@ -59,10 +59,25 @@ model.eval()
 # =========================
 st.title("Waste Classification AI")
 
-uploaded_file = st.file_uploader(
-    "Upload Waste Image",
-    type=["jpg", "jpeg", "png"]
+option = st.radio(
+    "Choose Image Source",
+    ["Upload Image", "Use Camera"]
 )
+
+uploaded_file = None
+
+if option == "Upload Image":
+
+    uploaded_file = st.file_uploader(
+        "Upload Waste Image",
+        type=["jpg", "jpeg", "png"]
+    )
+
+elif option == "Use Camera":
+
+    uploaded_file = st.camera_input(
+        "Take a Picture"
+    )
 
 if uploaded_file is not None:
 
