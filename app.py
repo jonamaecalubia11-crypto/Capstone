@@ -64,19 +64,22 @@ header {visibility: hidden;}
 
 .logo-icon {
     font-size: 55px;
+    line-height: 1;
 }
 
 .logo-text {
     font-size: 38px;
     font-weight: 800;
     color: #14532d;
-    margin-bottom: -8px;
+    line-height: 1.1;
 }
 
 .logo-sub {
     color: #4b5563;
     font-size: 15px;
+    margin-top: 4px;
 }
+
 
 /* Cards */
 .card {
