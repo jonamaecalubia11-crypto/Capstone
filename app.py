@@ -95,4 +95,4 @@ if uploaded_file is not None:
 
     result = class_names[predicted]
 
-    st.success(f"Prediction: {result}")... what if i will use my camera
+    st.success(f"Prediction: {result}")
