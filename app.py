@@ -247,6 +247,7 @@ st.markdown("""
     </div>
 
     <div>
+
         <div class="logo-text">
             ECOBIN AI
         </div>
@@ -254,6 +255,7 @@ st.markdown("""
         <div class="logo-sub">
             Smart AI Powered Waste Classification System
         </div>
+
     </div>
 
 </div>
