@@ -240,29 +240,24 @@ model = load_model()
 # NAVBAR
 # =====================================================
 st.markdown("""
-<div class="navbar">
+<div class="logo-container">
 
-    <div class="logo-container">
+    <div class="logo-icon">
+        ♻️
+    </div>
 
-        <div class="logo-icon">
-            ♻️
+    <div>
+        <div class="logo-text">
+            ECOBIN AI
         </div>
 
-        <div>
-            <div class="logo-text">
-                ECOBIN AI
-            </div>
-
-            <div class="logo-sub">
-                Smart AI Powered Waste Classification System
-            </div>
+        <div class="logo-sub">
+            Smart AI Powered Waste Classification System
         </div>
-
     </div>
 
 </div>
 """, unsafe_allow_html=True)
-
 # =====================================================
 # MAIN LAYOUT
 # =====================================================
