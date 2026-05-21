@@ -4,20 +4,17 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from torchvision.models import MobileNet_V2_Weights
-import time
 
 # =====================================================
 # PAGE CONFIG
 # =====================================================
 st.set_page_config(
     page_title="ECOBIN AI",
-    page_icon="♻️",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
 # =====================================================
-# CUSTOM CSS
+# SIMPLE CLEAN UI
 # =====================================================
 st.markdown("""
 <style>
@@ -27,153 +24,81 @@ st.markdown("""
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* Main App */
+/* Background */
 .stApp {
-    background: linear-gradient(
-        135deg,
-        #eefbf3,
-        #d7f5e3,
-        #c8f0d7
-    );
+    background-color: #f5f7f9;
 }
 
-/* Padding */
+/* Main Padding */
 .block-container {
-    padding-top: 1rem;
-    padding-bottom: 0rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
 }
 
-/* Navbar */
-.navbar {
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(10px);
-    padding: 20px 30px;
-    border-radius: 24px;
-    box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
-    margin-bottom: 25px;
+/* Title */
+.main-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 5px;
 }
 
-/* Logo */
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 18px;
+.sub-title {
+    color: #6b7280;
+    font-size: 16px;
+    margin-bottom: 30px;
 }
-
-.logo-icon {
-    font-size: 55px;
-    line-height: 1;
-}
-
-.logo-text {
-    font-size: 38px;
-    font-weight: 800;
-    color: #14532d;
-    line-height: 1.1;
-}
-
-.logo-sub {
-    color: #4b5563;
-    font-size: 15px;
-    margin-top: 4px;
-}
-
 
 /* Cards */
 .card {
-    background: rgba(255,255,255,0.90);
-    backdrop-filter: blur(8px);
-    padding: 28px;
-    border-radius: 28px;
-    box-shadow: 0px 8px 30px rgba(0,0,0,0.08);
-    height: 100%;
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Section Title */
 .section-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #14532d;
-    margin-bottom: 18px;
-}
-
-/* Radio Buttons */
-.stRadio > div {
-    flex-direction: row;
-    gap: 20px;
-}
-
-/* File Upload */
-[data-testid="stFileUploader"] {
-    background: #f9fafb;
-    border-radius: 18px;
-    padding: 12px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 20px;
 }
 
 /* Buttons */
 .stButton>button {
     width: 100%;
-    border-radius: 16px;
+    height: 3em;
+    border-radius: 10px;
     border: none;
-    height: 3.2em;
-    background: linear-gradient(
-        to right,
-        #166534,
-        #22c55e
-    );
+    background-color: #166534;
     color: white;
-    font-size: 17px;
-    font-weight: bold;
-}
-
-/* Image */
-img {
-    border-radius: 20px;
-}
-
-/* Result Card */
-.result-card {
-    padding: 30px;
-    border-radius: 26px;
-    color: white;
-    text-align: center;
-    margin-top: 20px;
-    box-shadow: 0px 8px 25px rgba(0,0,0,0.15);
-}
-
-/* Confidence */
-.confidence {
-    font-size: 20px;
-    margin-top: 10px;
-}
-
-/* Tip Box */
-.tip-box {
-    background: rgba(255,255,255,0.2);
-    padding: 12px;
-    border-radius: 14px;
-    margin-top: 20px;
     font-size: 16px;
+    font-weight: 600;
 }
 
-/* Metrics */
-.metric-box {
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(6px);
-    padding: 22px;
-    border-radius: 22px;
+/* Upload Box */
+[data-testid="stFileUploader"] {
+    border-radius: 10px;
+}
+
+/* Result Box */
+.result-box {
+    padding: 25px;
+    border-radius: 14px;
     text-align: center;
-    box-shadow: 0px 6px 20px rgba(0,0,0,0.06);
+    margin-top: 20px;
+    color: white;
 }
 
 /* Footer */
 .footer {
     text-align: center;
-    color: gray;
-    margin-top: 30px;
-    padding-bottom: 15px;
+    color: #6b7280;
+    margin-top: 40px;
     font-size: 14px;
 }
 
@@ -237,33 +162,22 @@ def load_model():
 model = load_model()
 
 # =====================================================
-# NAVBAR
+# HEADER
 # =====================================================
 st.markdown("""
-<div class="logo-container">
+<div class="main-title">
+    ECOBIN AI
+</div>
 
-    <div class="logo-icon">
-        ♻️
-    </div>
-
-    <div>
-
-        <div class="logo-text">
-            ECOBIN AI
-        </div>
-
-        <div class="logo-sub">
-            Smart AI Powered Waste Classification System
-        </div>
-
-    </div>
-
+<div class="sub-title">
+    Smart Waste Classification System
 </div>
 """, unsafe_allow_html=True)
+
 # =====================================================
-# MAIN LAYOUT
+# LAYOUT
 # =====================================================
-left_col, right_col = st.columns([1.1, 1])
+left_col, right_col = st.columns([1, 1])
 
 # =====================================================
 # LEFT PANEL
@@ -273,28 +187,28 @@ with left_col:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.markdown(
-        '<div class="section-title">📤 Upload Waste Image</div>',
+        '<div class="section-title">Upload Waste Image</div>',
         unsafe_allow_html=True
     )
 
     option = st.radio(
-        "Choose Input Method",
-        ["📁 Upload Image", "📷 Use Camera"]
+        "Select Input Method",
+        ["Upload Image", "Use Camera"]
     )
 
     uploaded_file = None
 
-    if option == "📁 Upload Image":
+    if option == "Upload Image":
 
         uploaded_file = st.file_uploader(
-            "Upload a waste image",
+            "Choose an image",
             type=["jpg", "jpeg", "png"]
         )
 
     else:
 
         uploaded_file = st.camera_input(
-            "Capture Waste Image"
+            "Capture Image"
         )
 
     st.markdown('</div>', unsafe_allow_html=True)
@@ -307,7 +221,7 @@ with right_col:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.markdown(
-        '<div class="section-title">🤖 AI Classification Result</div>',
+        '<div class="section-title">Classification Result</div>',
         unsafe_allow_html=True
     )
 
@@ -320,87 +234,57 @@ with right_col:
             use_container_width=True
         )
 
-        with st.spinner("ECOBIN AI is analyzing the image..."):
+        img_tensor = transform(image).unsqueeze(0).to(DEVICE)
 
-            time.sleep(1.2)
+        with torch.no_grad():
 
-            img_tensor = transform(image).unsqueeze(0).to(DEVICE)
+            outputs = model(img_tensor)
 
-            with torch.no_grad():
+            probs = torch.softmax(outputs, dim=1)
 
-                outputs = model(img_tensor)
-
-                probs = torch.softmax(outputs, dim=1)
-
-                confidence, predicted = torch.max(
-                    probs,
-                    dim=1
-                )
+            confidence, predicted = torch.max(
+                probs,
+                dim=1
+            )
 
         result = class_names[predicted.item()]
         confidence_score = confidence.item() * 100
 
-        # =====================================================
-        # RESULT DESIGN
-        # =====================================================
+        # RESULT COLORS
         if result == "biodegradable":
-
-            color = "#15803d"
-            emoji = "🌿"
-            tip = "This waste can naturally decompose and may be composted."
+            color = "#166534"
 
         elif result == "recyclable":
-
             color = "#1d4ed8"
-            emoji = "♻️"
-            tip = "This item can be processed and reused through recycling."
 
         else:
-
             color = "#b91c1c"
-            emoji = "🗑️"
-            tip = "Dispose this item properly in residual waste bins."
 
-        # =====================================================
         # RESULT CARD
-        # =====================================================
         st.markdown(
             f"""
-            <div class="result-card"
+            <div class="result-box"
                  style="background:{color};">
 
-                <h1 style="font-size:70px;">
-                    {emoji}
-                </h1>
-
-                <h2 style="
-                    margin-bottom:5px;
-                    font-size:32px;
-                ">
+                <h2 style="font-size:30px;">
                     {result.upper()}
                 </h2>
 
-                <div class="confidence">
+                <p style="font-size:18px;">
                     Confidence Score:
                     <b>{confidence_score:.2f}%</b>
-                </div>
-
-                <div class="tip-box">
-                    💡 {tip}
-                </div>
+                </p>
 
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        # =====================================================
         # PREDICTION SCORES
-        # =====================================================
         st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown(
-            '<div class="section-title">📊 Prediction Scores</div>',
+            '<div class="section-title">Prediction Scores</div>',
             unsafe_allow_html=True
         )
 
@@ -408,68 +292,21 @@ with right_col:
 
             score = probs[0][i].item() * 100
 
-            st.write(f"### {label.title()} — {score:.2f}%")
+            st.write(f"{label.title()} — {score:.2f}%")
 
             st.progress(int(score))
 
     else:
 
-        st.markdown("""
-        <div style="
-            text-align:center;
-            padding:70px 20px;
-            color:#6b7280;
-        ">
-            <h2>📸 No Image Uploaded</h2>
-
-            <p style="font-size:17px;">
-                Upload or capture a waste image to start
-                AI classification using ECOBIN.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("Upload or capture an image to start classification.")
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-# =====================================================
-# BOTTOM DASHBOARD
-# =====================================================
-st.markdown("<br>", unsafe_allow_html=True)
-
-m1, m2, m3 = st.columns(3)
-
-with m1:
-
-    st.markdown("""
-    <div class="metric-box">
-        <h2>⚡ Real-Time AI</h2>
-        <p>Fast and intelligent waste detection</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with m2:
-
-    st.markdown("""
-    <div class="metric-box">
-        <h2>🧠 MobileNetV2</h2>
-        <p>Powered by Deep Learning Technology</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with m3:
-
-    st.markdown("""
-    <div class="metric-box">
-        <h2>🌎 Smart Segregation</h2>
-        <p>Helping create a cleaner environment</p>
-    </div>
-    """, unsafe_allow_html=True)
 
 # =====================================================
 # FOOTER
 # =====================================================
 st.markdown("""
 <div class="footer">
-    ECOBIN AI © 2026 | Smart Waste Management System
+    ECOBIN AI © 2026
 </div>
 """, unsafe_allow_html=True)
