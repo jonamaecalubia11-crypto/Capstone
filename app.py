@@ -4,127 +4,174 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from torchvision.models import MobileNet_V2_Weights
-import numpy as np
 import time
 
 # =====================================================
 # PAGE CONFIG
 # =====================================================
 st.set_page_config(
-    page_title="EcoSort AI",
+    page_title="ECOBIN AI",
     page_icon="♻️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # =====================================================
-# CUSTOM CSS (REAL APP UI)
+# CUSTOM CSS
 # =====================================================
 st.markdown("""
 <style>
 
-#MainMenu {
-    visibility: hidden;
+/* Hide Streamlit Branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Main App */
+.stApp {
+    background: linear-gradient(
+        135deg,
+        #eefbf3,
+        #d7f5e3,
+        #c8f0d7
+    );
 }
 
-footer {
-    visibility: hidden;
-}
-
-header {
-    visibility: hidden;
-}
-
+/* Padding */
 .block-container {
     padding-top: 1rem;
     padding-bottom: 0rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
-/* MAIN BACKGROUND */
-.stApp {
-    background: linear-gradient(to bottom right, #edf7f1, #dff5e5);
-}
-
-/* TOP NAVBAR */
+/* Navbar */
 .navbar {
-    background-color: white;
-    padding: 18px;
-    border-radius: 18px;
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: 24px;
+    box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+/* Logo */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo-icon {
+    font-size: 55px;
 }
 
 .logo-text {
-    font-size: 34px;
-    font-weight: bold;
-    color: #1b5e20;
+    font-size: 38px;
+    font-weight: 800;
+    color: #14532d;
+    margin-bottom: -8px;
 }
 
 .logo-sub {
-    color: gray;
-    margin-top: -10px;
+    color: #4b5563;
+    font-size: 15px;
 }
 
-/* CARD */
+/* Cards */
 .card {
-    background: white;
-    padding: 25px;
-    border-radius: 24px;
-    box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.90);
+    backdrop-filter: blur(8px);
+    padding: 28px;
+    border-radius: 28px;
+    box-shadow: 0px 8px 30px rgba(0,0,0,0.08);
+    height: 100%;
 }
 
-/* RESULT CARD */
-.result-card {
-    padding: 30px;
-    border-radius: 24px;
-    color: white;
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* CONFIDENCE */
-.confidence-text {
-    font-size: 18px;
-    margin-top: 10px;
-}
-
-/* SECTION TITLE */
+/* Section Title */
 .section-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    margin-bottom: 15px;
-    color: #1b5e20;
+    color: #14532d;
+    margin-bottom: 18px;
 }
 
-/* METRICS */
-.metric-box {
-    background: #f7f7f7;
-    padding: 15px;
-    border-radius: 18px;
-    text-align: center;
-}
-
-/* BUTTON */
-.stButton>button {
-    width: 100%;
-    border-radius: 14px;
-    height: 3.2em;
-    border: none;
-    background: linear-gradient(to right, #1b5e20, #43a047);
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-}
-
-/* RADIO */
+/* Radio Buttons */
 .stRadio > div {
     flex-direction: row;
     gap: 20px;
 }
 
-/* IMAGE */
-img {
+/* File Upload */
+[data-testid="stFileUploader"] {
+    background: #f9fafb;
     border-radius: 18px;
+    padding: 12px;
+}
+
+/* Buttons */
+.stButton>button {
+    width: 100%;
+    border-radius: 16px;
+    border: none;
+    height: 3.2em;
+    background: linear-gradient(
+        to right,
+        #166534,
+        #22c55e
+    );
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+/* Image */
+img {
+    border-radius: 20px;
+}
+
+/* Result Card */
+.result-card {
+    padding: 30px;
+    border-radius: 26px;
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+    box-shadow: 0px 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Confidence */
+.confidence {
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+/* Tip Box */
+.tip-box {
+    background: rgba(255,255,255,0.2);
+    padding: 12px;
+    border-radius: 14px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+/* Metrics */
+.metric-box {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(6px);
+    padding: 22px;
+    border-radius: 22px;
+    text-align: center;
+    box-shadow: 0px 6px 20px rgba(0,0,0,0.06);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: gray;
+    margin-top: 30px;
+    padding-bottom: 15px;
+    font-size: 14px;
 }
 
 </style>
@@ -191,61 +238,76 @@ model = load_model()
 # =====================================================
 st.markdown("""
 <div class="navbar">
-    <div class="logo-text">♻️ EcoSort AI</div>
-    <div class="logo-sub">
-        Smart Waste Classification System
+
+    <div class="logo-container">
+
+        <div class="logo-icon">
+            ♻️
+        </div>
+
+        <div>
+            <div class="logo-text">
+                ECOBIN AI
+            </div>
+
+            <div class="logo-sub">
+                Smart AI Powered Waste Classification System
+            </div>
+        </div>
+
     </div>
+
 </div>
 """, unsafe_allow_html=True)
 
 # =====================================================
-# LAYOUT
+# MAIN LAYOUT
 # =====================================================
-left_col, right_col = st.columns([1.2, 1])
+left_col, right_col = st.columns([1.1, 1])
 
 # =====================================================
-# LEFT SIDE
+# LEFT PANEL
 # =====================================================
 with left_col:
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.markdown(
-        '<div class="section-title">Upload Waste Image</div>',
+        '<div class="section-title">📤 Upload Waste Image</div>',
         unsafe_allow_html=True
     )
 
     option = st.radio(
-        "Select Source",
-        ["📁 Upload", "📷 Camera"]
+        "Choose Input Method",
+        ["📁 Upload Image", "📷 Use Camera"]
     )
 
     uploaded_file = None
 
-    if option == "📁 Upload":
+    if option == "📁 Upload Image":
 
         uploaded_file = st.file_uploader(
-            "Upload an image",
+            "Upload a waste image",
             type=["jpg", "jpeg", "png"]
         )
 
     else:
 
         uploaded_file = st.camera_input(
-            "Take a picture"
+            "Capture Waste Image"
         )
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# RIGHT SIDE
+# RIGHT PANEL
 # =====================================================
 with right_col:
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.markdown(
-        '<div class="section-title">AI Detection Result</div>',
+        '<div class="section-title">🤖 AI Classification Result</div>',
         unsafe_allow_html=True
     )
 
@@ -258,9 +320,9 @@ with right_col:
             use_container_width=True
         )
 
-        with st.spinner("AI is analyzing the waste..."):
+        with st.spinner("ECOBIN AI is analyzing the image..."):
 
-            time.sleep(1.5)
+            time.sleep(1.2)
 
             img_tensor = transform(image).unsqueeze(0).to(DEVICE)
 
@@ -279,25 +341,25 @@ with right_col:
         confidence_score = confidence.item() * 100
 
         # =====================================================
-        # RESULT STYLE
+        # RESULT DESIGN
         # =====================================================
         if result == "biodegradable":
 
-            color = "#2e7d32"
+            color = "#15803d"
             emoji = "🌿"
-            tip = "Can be composted naturally."
+            tip = "This waste can naturally decompose and may be composted."
 
         elif result == "recyclable":
 
-            color = "#1565c0"
+            color = "#1d4ed8"
             emoji = "♻️"
-            tip = "Send this item for recycling."
+            tip = "This item can be processed and reused through recycling."
 
         else:
 
-            color = "#c62828"
+            color = "#b91c1c"
             emoji = "🗑️"
-            tip = "Dispose properly in residual bins."
+            tip = "Dispose this item properly in residual waste bins."
 
         # =====================================================
         # RESULT CARD
@@ -307,24 +369,23 @@ with right_col:
             <div class="result-card"
                  style="background:{color};">
 
-                <h1>{emoji}</h1>
+                <h1 style="font-size:70px;">
+                    {emoji}
+                </h1>
 
-                <h2 style="margin-bottom:5px;">
+                <h2 style="
+                    margin-bottom:5px;
+                    font-size:32px;
+                ">
                     {result.upper()}
                 </h2>
 
-                <div class="confidence-text">
-                    Confidence: {confidence_score:.2f}%
+                <div class="confidence">
+                    Confidence Score:
+                    <b>{confidence_score:.2f}%</b>
                 </div>
 
-                <br>
-
-                <div style="
-                    background: rgba(255,255,255,0.2);
-                    padding:10px;
-                    border-radius:12px;
-                    font-size:16px;
-                ">
+                <div class="tip-box">
                     💡 {tip}
                 </div>
 
@@ -334,12 +395,12 @@ with right_col:
         )
 
         # =====================================================
-        # PROBABILITY SCORES
+        # PREDICTION SCORES
         # =====================================================
         st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown(
-            '<div class="section-title">Prediction Scores</div>',
+            '<div class="section-title">📊 Prediction Scores</div>',
             unsafe_allow_html=True
         )
 
@@ -347,22 +408,23 @@ with right_col:
 
             score = probs[0][i].item() * 100
 
-            st.progress(int(score))
+            st.write(f"### {label.title()} — {score:.2f}%")
 
-            st.write(f"{label.title()} — {score:.2f}%")
+            st.progress(int(score))
 
     else:
 
         st.markdown("""
         <div style="
             text-align:center;
-            padding:60px 20px;
-            color:gray;
+            padding:70px 20px;
+            color:#6b7280;
         ">
-            <h2>📸 No Image Selected</h2>
-            <p>
-                Upload or capture a waste image to begin
-                classification.
+            <h2>📸 No Image Uploaded</h2>
+
+            <p style="font-size:17px;">
+                Upload or capture a waste image to start
+                AI classification using ECOBIN.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -380,8 +442,8 @@ with m1:
 
     st.markdown("""
     <div class="metric-box">
-        <h2>⚡ Fast AI</h2>
-        <p>Real-time waste detection</p>
+        <h2>⚡ Real-Time AI</h2>
+        <p>Fast and intelligent waste detection</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -390,7 +452,7 @@ with m2:
     st.markdown("""
     <div class="metric-box">
         <h2>🧠 MobileNetV2</h2>
-        <p>Deep Learning Powered</p>
+        <p>Powered by Deep Learning Technology</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -398,22 +460,16 @@ with m3:
 
     st.markdown("""
     <div class="metric-box">
-        <h2>🌎 Eco Friendly</h2>
-        <p>Supports smart segregation</p>
+        <h2>🌎 Smart Segregation</h2>
+        <p>Helping create a cleaner environment</p>
     </div>
     """, unsafe_allow_html=True)
 
 # =====================================================
 # FOOTER
 # =====================================================
-st.markdown("<br><br>", unsafe_allow_html=True)
-
 st.markdown("""
-<div style="
-    text-align:center;
-    color:gray;
-    padding-bottom:10px;
-">
-    EcoSort AI © 2026 | Smart Waste Management System
+<div class="footer">
+    ECOBIN AI © 2026 | Smart Waste Management System
 </div>
 """, unsafe_allow_html=True)
