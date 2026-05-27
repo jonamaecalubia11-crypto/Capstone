@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from torchvision.models import MobileNet_V2_Weights
+import serial
+import time
 
 # =========================
 # SETTINGS
@@ -12,12 +14,22 @@ IMG_SIZE = 224
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # =========================
+# CONNECT TO ESP32
+# =========================
+try:
+    esp32 = serial.Serial('COM3', 115200)
+    time.sleep(2)
+    esp32_connected = True
+except:
+    esp32_connected = False
+
+# =========================
 # CLASS NAMES
 # =========================
 class_names = [
     "biodegradable",
-    "residual",
-    "recyclable"
+    "recyclable",
+    "residual"
 ]
 
 # =========================
@@ -57,7 +69,13 @@ model.eval()
 # =========================
 # STREAMLIT UI
 # =========================
-st.title("Waste Classification AI")
+st.title("♻️ Waste Classification AI")
+
+# ESP32 STATUS
+if esp32_connected:
+    st.success("ESP32 Connected")
+else:
+    st.error("ESP32 Not Connected")
 
 option = st.radio(
     "Choose Image Source",
@@ -79,11 +97,18 @@ elif option == "Use Camera":
         "Take a Picture"
     )
 
+# =========================
+# PREDICTION
+# =========================
 if uploaded_file is not None:
 
     image = Image.open(uploaded_file).convert("RGB")
 
-    st.image(image, caption="Uploaded Image", use_container_width=True)
+    st.image(
+        image,
+        caption="Uploaded Image",
+        use_container_width=True
+    )
 
     img_tensor = transform(image).unsqueeze(0).to(DEVICE)
 
@@ -95,4 +120,29 @@ if uploaded_file is not None:
 
     result = class_names[predicted]
 
+    # DISPLAY RESULT
     st.success(f"Prediction: {result}")
+
+    # =========================
+    # SEND TO ESP32
+    # =========================
+    if esp32_connected:
+
+        esp32.write((result + "\n").encode())
+
+        st.info("Prediction sent to ESP32")
+
+    # =========================
+    # LIVE NOTIFICATIONS
+    # =========================
+    if result == "biodegradable":
+
+        st.success("🌱 Biodegradable Waste Detected")
+
+    elif result == "residual":
+
+        st.warning("⚠️ Residual Waste Detected")
+
+    elif result == "recyclable":
+
+        st.info("♻️ Recyclable Waste Detected")
